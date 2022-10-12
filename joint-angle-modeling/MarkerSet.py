@@ -2,9 +2,17 @@ import numpy as np
 import pandas as pd
 
 class MarkerSet:
-    def __init__(self,df: pd.DataFrame,number : int):
-        self.grab_point(df,number)
+    def __init__():
+    print("Please make sure to initialize your markerset using 'load_from_dataframe' or 'load_from_numpy'")
     
+    def load_from_numpy(x_array,y_array,z_array):
+        self.x_ = x_array
+        self.y_ = y_array
+        self.z_ = z_array
+    
+    def load_from_dataframe(self,df,number):
+        self.grab_point(df,number)
+
     def grab_point(self,df,point):
         x = "X" + str(point)
         y = "Y" + str(point)
