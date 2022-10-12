@@ -19,3 +19,4 @@ Broadly, we break things up into 3 classes: `MarkerSet`, `Bone`, and `Joint`. A 
   - [ ]  Write a reference frame between two bones (using built-in scripts that automatically convert between fiducial and "true")
   - [ ] Decompose angles based on our choice (Grood and Suntay is my vote)
   - [ ] Plot angles using whatever method we want.
+  - [ ] Lol

@@ -27,4 +27,5 @@ class MarkerSet:
         x_dir = np.divide(x_diff,norm)
         y_dir = np.divide(y_diff,norm)
         z_dir = np.divide(z_diff,norm)
+        print("testing lol")
         return norm, np.array([x_dir, y_dir, z_dir]).T
