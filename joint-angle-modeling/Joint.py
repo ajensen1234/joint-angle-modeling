@@ -14,5 +14,4 @@ class Joint:
             prox_vec = self.proximal_bone.vectors[idx]
             dist_vec = self.distal_bone.vectors[idx]
             
-            self.Joint_Angles[idx] = np.rad2deg(np.arccos(np.dot(dist_vec,prox_vec)))
-        
+            self.Joint_Angles[idx] = np.rad2deg(np.arccos(np.dot(dist_vec,prox_vec)))       

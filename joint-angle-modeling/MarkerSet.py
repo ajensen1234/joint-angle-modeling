@@ -18,6 +18,7 @@ class MarkerSet:
     
     def vector_from_another_point(self,marker_set):
         return self.create_vector(marker_set,self)
+        
     def create_vector(self,start_point, end_point):
         x_diff = end_point.x_ - start_point.x_
         y_diff = end_point.y_ - start_point.y_
@@ -27,5 +28,4 @@ class MarkerSet:
         x_dir = np.divide(x_diff,norm)
         y_dir = np.divide(y_diff,norm)
         z_dir = np.divide(z_diff,norm)
-        print("testing lol")
         return norm, np.array([x_dir, y_dir, z_dir]).T
