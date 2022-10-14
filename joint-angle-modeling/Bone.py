@@ -11,25 +11,3 @@ class Bone:
         self.true = true_marker_set
         self.dynamic_to_true_matrix = np.matmul(self.true.camera_to_local_matrix, self.dynamic.local_to_camera_matrix)
         self.camera_to_true_matrix = np.matmul(self.dynamic_to_true_matrix, self.dynamic.camera_to_local_matrix)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

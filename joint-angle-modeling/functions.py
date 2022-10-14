@@ -9,4 +9,4 @@ def find_right_hip_center_andriacchi(RASIS, RPSIS, LASIS, LPSIS):
     
     HC_x = 0.5*(RASIS.x_ + psis_midpoint_x)
     HC_y = 0.5*(RASIS.y_ + psis_midpoint_y)
-    HC_z = 0.5*(RASIS.z_ + psis_midpoint_z) 
+    HC_z = 0.5*(RASIS.z_ + psis_midpoint_z) - 15
