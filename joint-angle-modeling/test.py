@@ -13,6 +13,8 @@ mocap_data.load('friday/4407cd01.trc')
 RKnee = mocap_data['RKnee']
 RKnee_frame = pd.DataFrame(RKnee, columns=['X', 'Y', 'Z'])
 
+print(RKnee_frame)
+
 RMedKnee = mocap_data['RMed.Knee']
 RMedKnee_frame = pd.DataFrame(RMedKnee, columns=['X', 'Y', 'Z'])
 
