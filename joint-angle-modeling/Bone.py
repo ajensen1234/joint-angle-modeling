@@ -3,7 +3,7 @@ from MarkerSet import MarkerSet
 
 
 class Bone:
-    def __init__(self,dynamic_marker_set, true_marker_set):
+    def __init__(self,dynamic_marker_set: MarkerSet, true_marker_set: MarkerSet):
         """
         self.length, self.vectors = proximal_marker_set.vector_to_another_point(distal_marker_set)
         """

@@ -3,10 +3,10 @@ from Bone import Bone
 from MarkerSet import MarkerSet
 
 class Joint:
-    def __init__(self,proximal_bone,distal_bone):
-        self.proximal_bone = proximal_bone
-        self.distal_bone = distal_bone
-        self.calculate_joint_angle()
+    def __init__(self,proximal_bone_dynamic_marker_set: MarkerSet, distal_bone_dynamic_marker_set: MarkerSet, proximal_bone_dynamic_to_true_matrix, distal_bone_dynamic_to_true_matrix):
+        self.proximal_bone_dynamic_marker_set = proximal_bone_dynamic_marker_set
+        self.distal_bone_dynamic_marker_set = distal_bone_dynamic_marker_set
+        self.joint_angles = self.calculate_joint_angle()
         
     def calculate_joint_angle(self):
         self.Joint_Angles = np.empty(self.proximal_bone.length.shape[0])

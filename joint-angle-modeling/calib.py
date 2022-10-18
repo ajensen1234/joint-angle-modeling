@@ -7,6 +7,10 @@ Main script for the project.
 
 # import the necessary packages
 from trc import TRCData
+import pandas as pd
+import numpy as np
+
+from functions import *
 
 # load data
 calib_data = TRCData()
@@ -71,34 +75,52 @@ RToe_raw = calib_data['RToe']
 RToe = pd.DataFrame(RToe_raw, columns=['X', 'Y', 'Z'])
 RToe = tuple(RToe.itertuples(index=False, name=None))
 
-## Do thigh Things
 
-# initialize thigh object
-Thigh = Bone()
+### Calibration Phase
+
+
+## Do Thigh Things
 
 # create dynamic markerset object
-HipCenter = MarkerSet()
-HipCenter.find_right_hip_center(RASIS=RASIS, RPSIS=RPSIS, LASIS=LASIS, LPSIS=LPSIS)
-DynamicThigh = MarkerSet(origin=RThigh, x_axis=RKnee-RThigh, z_prime_end=HipCenter)
+HipCenter = find_right_hip_center_andriacchi(RASIS=RASIS, RPSIS=RPSIS, LASIS=LASIS, LPSIS=LPSIS)
+DynamicThighXAxis = ()
+for idx, (i, j) in enumerate(zip(RKnee, RThigh)):
+    DynamicThighXAxis += (i[0] - j[0], i[1] - j[1], i[2] - j[2]),
+DynamicThigh = MarkerSet(origin=RThigh, x_axis=DynamicThighXAxis, z_prime_end=HipCenter)
 
 # create true markerset object
 # TrueThigh = MarkerSet(RKnee, RMedKnee, HipCenter)
 # TrueThigh = MarkerSet(origin, x_axis, z_prime_axis)
-TrueThigh = MarkerSet(origin=(RKnee-RMedKnee), x_axis=(RKnee-RMedKnee), z_prime_end=HipCenter)
+TrueThighXAxis = ()
+for idx, (i, j) in enumerate(zip(RKnee, RMedKnee)):
+    TrueThighXAxis += (i[0] - j[0], i[1] - j[1], i[2] - j[2]),
+TrueThighOrigin = MidPoint(RKnee, RMedKnee)
+TrueThigh = MarkerSet(origin=TrueThighOrigin, x_axis=TrueThighXAxis, z_prime_end=HipCenter)
 
-# load the dynamic and true markersets into the thigh object
-Thigh.load_markers(DynamicThigh, TrueThigh) # the markersets get loaded into the bone object and transformation matrices are created
-
-# load in the actual trial data that we want to get info for
-trial_data = TRCData()
-trial_data.load('../friday/4407cd02.trc')   # cd02 is walking
-# return movement in the true reference frame
-final_data = np.matmul(Thigh.camera_to_local_matrix, trial_data)    # this trial_data needs to be broken down to the markers
+# initialize thigh bone object
+Thigh = Bone(dynamic_marker_set=DynamicThigh, true_marker_set=TrueThigh)
 
 
 ## Do Shank Things
-# create shank object by passing in the appropriate marker data
 
+#create dynamic markerset object
+DynamicShankXAxis = ()
+for idx, (i, j) in enumerate(zip(RAnkle, RShank)):
+    DynamicShankXAxis += (i[0]-j[0], i[1]-j[1], i[2]-j[2]),
+DynamicShank = MarkerSet(origin=RShank, x_axis=DynamicShankXAxis, z_prime_end=RKnee)
+
+# create true markerset object
+TrueShankXAxis = ()
+for idx, (i, j) in enumerate(zip(RKnee, RMedKne)):
+    TrueShankXAxis += (i[0]-j[0], i[1]-j[1], i[2]-j[2]),
+TrueShankOrigin = TrueThighOrigin
+TrueShank = MarkerSet(origin=TrueShankOrigin, x_axis=TrueShankXAxis, z_prime_end=RAnkle)
+
+# initialize shank bone object
+Shank = Bone(dynamic_marker_set=DynamicShank, true_marker_set=TrueShank)
+
+
+# Save calibration matrices
 
 
 
