@@ -9,7 +9,7 @@ import numpy as np
 
 from functions import *
 
-TRIAL_PATH = '../friday/4407cd01.trc'
+TRIAL_PATH = '../friday/4407cd02.trc'
 PROXIMAL_MATRIX_PATH = ''
 DISTAL_MATRIX_PATH = ''
 
@@ -87,7 +87,21 @@ trial_data.load(TRIAL_PATH)
 
 ## Do Knee Joint Things
 # create knee joint object
-Knee = Joint(proximal_bone_dynamic_marker_set=, distal_bone_dynamic_marker_set=, proximal_bone_dynamic_to_true_matrix=, distal_bone_dynamic_to_true_matrix=)
+HipCenter = find_right_hip_center_andriacchi(RASIS=RASIS, RPSIS=RPSIS, LASIS=LASIS, LPSIS=LPSIS)
+DynamicThighXAxis = ()
+for idx, (i, j) in enumerate(zip(RKnee, RThigh)):
+    DynamicThighXAxis += (i[0]-j[0], i[1]-j[1], i[2]-j[2]),
+DynamicShankXAxis = ()
+for idx, (i, j) in enumerate(zip(RAnkle, RShank)):
+    DynamicShankXAxis += (i[0]-j[0], i[1]-j[1], i[2]-j[2]),
+PBDMS = []
+DBDMS = []
+for idx, frame in enumerate(Frames):
+    PBDMS.append(MarkerSet(RThigh[idx], DynamicThighXAxis[idx], HipCenter[idx]))
+    DBDMS.append(MarkerSet(RShank[idx], DynamicShankXAxis[idx], RKnee[idx]))
+
+# PBDMS = proximal dynamic marker set, DBDMS = distal dynamic marker set
+Knee = Joint(PBDMS=PBDMS, DBDMS=DBDMS, proximal_bone_dynamic_to_true_matrix=, distal_bone_dynamic_to_true_matrix=)
 #print(Knee.joint_angles)
 
 

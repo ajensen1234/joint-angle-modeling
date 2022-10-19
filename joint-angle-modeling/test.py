@@ -13,8 +13,6 @@ mocap_data.load('friday/4407cd01.trc')
 RKnee = mocap_data['RKnee']
 RKnee_frame = pd.DataFrame(RKnee, columns=['X', 'Y', 'Z'])
 
-print(RKnee_frame)
-
 RMedKnee = mocap_data['RMed.Knee']
 RMedKnee_frame = pd.DataFrame(RMedKnee, columns=['X', 'Y', 'Z'])
 
@@ -26,22 +24,10 @@ RThigh_frame = pd.DataFrame(RThigh, columns=['X', 'Y', 'Z'])
 RThigh_frame = tuple(RThigh_frame.itertuples(index=False, name=None))
 crossyboy = np.cross(pls_work, RThigh_frame)
 #print(type(RThigh_frame))
-print(pls_work)
-print(RThigh_frame)
-for row in RThigh_frame:
-    print(row)
+print(pls_work[123])
+print(type([1,2,3]))
+#print(RThigh_frame)
 #print(list(RThigh_frame))
-#asdf = pls_work - RThigh_frame
-#asdf_tuple = tuple(ti / 2 for ti in asdf)
-#lambda_test = tuple(map(lambda i, j: i - j, pls_work, RThigh_frame))
-#print(lambda_test)
-new_tuple = ()
-for idx, (i, j) in enumerate(zip(pls_work, RThigh_frame)):
-    new_tuple += (i[0] - j[0], i[1] - j[1], i[2] - j[2]),
-
-print(new_tuple)
-
-# midpoint(m1,m2) = m1 + ((m2 - m1) / 2)
 
 #crossyboy = crossyboy / np.linalg.norm(crossyboy, axis=1)[:,:]
 for idx, point in enumerate(crossyboy):
