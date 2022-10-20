@@ -1,4 +1,4 @@
-\documentclass{IEEEtran}
+\documentclass{article}
 \usepackage{import}
 
 \input{Preamble/packages.tex}
@@ -109,5 +109,31 @@
             &= [T^{G}_{thigh}T^{thigh}_{fem}]^{-1}[T^{G}_{shank}T^{shank}_{tib}]
         \end{aligned}
         \label{t_fem_tib}
+    \end{equation}
+    This matrix gives us the relative position and rotation between our femoral and tibial reference frames. Decomposing this matrix into the multiplication of X-Y-Z rotations, we can extract the anatomic rotations as flexion/extension, varus/valgus, and internal/external (\refeq{rot}).
+
+    \begin{equation}
+        \begin{aligned}
+            R^{fem}_{tib} & = R_{x}R_{y}R_{z}\\
+            &= \begin{bmatrix}1 & 0 & 0 \\ 0 & c_{x} & -s_{x} \\ 0 & s_{x} & c_{x} \end{bmatrix}
+            \begin{bmatrix}c_{y} & 0 & s_{y}\\ 0 & 1 & 0 \\ -s_{y} & 0 & c_{y} \end{bmatrix}
+            \begin{bmatrix} c_{z} & -s_{z} & 0 \\ s_{z} & c_{z} & 0 \\ 0 & 0 & 1 \end{bmatrix}\\
+            &= \begin{bmatrix}
+                c_{y}c_{z} & -s_{z}c_{y} & s_{y} \\
+                s_{z}c_{x} + s_{y}s_{x}c_{z} & -s_{x}s_{y}s_{z} + c_{x}c_{z} & -c_{y}s_{x} \\
+                -c_{z}c_{x}s_{y} + s_{x}s_{z} & s_{z}s_{y}c_{x} + c_{z}s_{x}  & c_{x}c_{y}
+            \end{bmatrix}
+        \end{aligned}
+        \label{rot}
+    \end{equation}
+
+    We can decompose this into our desired angles using basic trigonometry.
+
+    \begin{equation}
+        \begin{aligned}
+            \theta_{y} &= sin^{-1}(R_{1,3}) = \text{Flexion/Extension} \\
+            \theta_{z} & = tan^{-1}(-\frac{R_{1,2}}{R_{1,1}}) = \text{Internal/External Rotation} \\
+            \theta_{x} & = tan^{-1}(-\frac{R_{2,3}}{R_{3,3}}) = \text{Abduction/Adduction}
+        \end{aligned}
     \end{equation}
 \end{document}
