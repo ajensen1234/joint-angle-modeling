@@ -98,8 +98,11 @@ Knee = Joint(PBDRF_array=PBDRF_array,
 
 
 
-print(Knee.joint_angles)
-print(Knee.translations)
+print(Knee.joint_angles.shape)
+print(Knee.translations.shape)
+
+np.save('knee_joint_angles.npy', Knee.joint_angles)
+np.save('knee_translations.npy',Knee.translations)
 
 
 

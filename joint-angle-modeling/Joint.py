@@ -11,28 +11,27 @@ class Joint:
         self.joint_angles, self.translations = self.calculate_joint_geometry()
         
     def calculate_joint_geometry(self):
-        joint_angles = []
-        translations = []
+        joint_angles = np.empty((len(self.PBDRF_array), 3))
+        translations = np.empty((len(self.PBDRF_array), 3))
         for idx, (i,j) in enumerate(zip(self.PBDRF_array, self.DBDRF_array)):
 
             proximal_camera_to_true_matrix = np.matmul(self.proximal_bone_dynamic_to_true_matrix, self.PBDRF_array[idx].camera_to_local_matrix)
             distal_camera_to_true_matrix = np.matmul(self.distal_bone_dynamic_to_true_matrix, self.DBDRF_array[idx].camera_to_local_matrix)
             joint_transformation_matrix = np.matmul(proximal_camera_to_true_matrix, np.linalg.inv(distal_camera_to_true_matrix))
-            #print(joint_transformation_matrix)
             
             # calculate joint angles
             # TODO: check this and account for angles that fall outside of the range of the arccos and arcsin functions
-            x_angle = (np.arcsin(joint_transformation_matrix[2][1]))
-            y_angle = (np.arccos(joint_transformation_matrix[2][2]/np.cos(x_angle)))
-            z_angle = (np.arccos(joint_transformation_matrix[1][1]/np.cos(x_angle)))
-            joint_angles = np.append(joint_angles, [x_angle, y_angle, z_angle])
+            x_angle = np.arctan2(-joint_transformation_matrix[1,2],joint_transformation_matrix[2,2])
+            y_angle = np.arcsin(joint_transformation_matrix[0,2])
+            z_angle = np.arctan2(-joint_transformation_matrix[0,1],joint_transformation_matrix[0,0])
+            joint_angles[idx, :] = np.array([x_angle, y_angle, z_angle])
 
             # calculate joint translations
             # TODO: check this lol
             x_translation = joint_transformation_matrix[0][3]
             y_translation = joint_transformation_matrix[1][3]
             z_translation = joint_transformation_matrix[2][3]
-            translations = np.append(translations, [x_translation, y_translation, z_translation])
+            translations[idx, :] = np.array([x_translation, y_translation, z_translation])
 
 
         return joint_angles, translations
