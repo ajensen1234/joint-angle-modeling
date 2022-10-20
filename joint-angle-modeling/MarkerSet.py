@@ -5,7 +5,7 @@ class MarkerSet:
     def __init__():
         print("Please make sure to initialize your markerset using 'load_from_dataframe' or 'load_from_numpy'")
 
-    def __init__(self, origin: tuple, x_axis: tuple, z_prime_end: tuple):
+    def __init__(self, origin, x_axis, z_prime_end):
         # these are arrays, not individual points
 
         # create the axes
@@ -21,30 +21,21 @@ class MarkerSet:
         self.y_axis = self.normalize_axis(self.y_axis)
         self.z_axis = self.normalize_axis(self.z_axis)
 
-        """
-        # average axes to get the final axes
-        self.x_axis = np.average(self.x_axis, axis=0)
-        self.y_axis = np.average(self.y_axis, axis=0)
-        self.z_axis = np.average(self.z_axis, axis=0)
-        """
-
-
-        # arrays of x,y,z coordinates
-        self.x_ = None
-        self.y_ = None
-        self.z_ = None
-
         self.local_to_camera_matrix = self.create_transformation_matrix(x_axis=self.x_axis, y_axis=self.y_axis, z_axis=self.z_axis, origin=self.origin)
         self.camera_to_local_matrix = np.linalg.inv(self.local_to_camera_matrix)
 
     def create_transformation_matrix(self, x_axis, y_axis, z_axis, origin):
-        temp = np.array([x_axis, y_axis, z_axis])
-        temp = np.append(temp, np.array([[0],[0],[0],[1]]), axis=1).T
+        temp = np.empty((4, 4, len(x_axis)))
+        for idx, point in enumerate(x_axis):
+            temp[:, :, idx] = np.array([[x_axis[idx], y_axis[idx], z_axis[idx], origin[idx]],[0,0,0,1]])
         return temp
     
     def normalize_axis(self, axis) -> np.ndarray:
-        axis = axis / sum(list(axis))
-        return axis
+        norm = np.linalg.norm(axis, axis=1)
+        x = np.divide(axis[:,0],norm)
+        y = np.divide(axis[:,1],norm)
+        z = np.divide(axis[:,2],norm)
+        axis = np.array([x,y,z]).T
 
     def load_from_numpy(self, x_array,y_array,z_array):
         self.x_ = x_array

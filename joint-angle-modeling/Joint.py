@@ -3,20 +3,20 @@ from Bone import Bone
 from MarkerSet import MarkerSet
 
 class Joint:
-    def __init__(self, PBDMS: list, DBDMS: list, proximal_bone_dynamic_to_true_matrix, distal_bone_dynamic_to_true_matrix):
+    def __init__(self, PBDMS, DBDMS):
         self.PBDMS = PBDMS
         self.DBDMS = DBDMS
-        self.proximal_bone_dynamic_to_true_matrix = proximal_bone_dynamic_to_true_matrix
-        self.distal_bone_dynamic_to_true_matrix = distal_bone_dynamic_to_true_matrix
+        self.proximal_bone_dynamic_to_true_matrix = PBDMS.dynamic_to_true_matrix
+        self.distal_bone_dynamic_to_true_matrix = DBDMS.dynamic_to_true_matrix
         self.joint_angles, self.translations = self.calculate_joint_geometry()
         
-    def calculate_joint_geometry(self) -> list, list:
+    def calculate_joint_geometry(self):
         proximal_camera_to_true_matrices= []
         distal_camera_to_true_matrices = []
         joint_transformation_matrices = []
         joint_angles = []
         translations = []
-        for idx, frame in enumerate(Frames):
+        for idx, frame in enumerate(Frames): # where are you getting Frames from?
             proximal_camera_to_true_matrices.append(np.matmul(self.proximal_bone_dynamic_to_true_matrix, self.PBDMS[idx].camera_to_local_matrix))
             distal_camera_to_true_matrices.append(np.matmul(self.distal_bone_dynamic_to_true_matrix, self.DBDMS[idx].camera_to_local_matrix))
             # the below line should not go out of bounds because the proximal and distal bone matrix elements it needs have just been created
@@ -24,6 +24,7 @@ class Joint:
             
             # calculate joint angles
             # TODO: check this and account for angles that fall outside of the range of the arccos and arcsin functions
+            # TODO: I would do this as arctan2() functions in order to get the correct quadrant of the unit circle
             x_angle = (np.arcsin(joint_transformation_matrices[idx][2][1]))
             y_angle = (np.arccos(joint_transformation_matrices[idx][2][2]/np.cos(x_angle)))
             z_angle = (np.arccos(joint_transformation_matrices[idx][1][1]/np.cos(x_angle)))

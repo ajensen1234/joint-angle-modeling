@@ -1,0 +1,113 @@
+\documentclass{IEEEtran}
+\usepackage{import}
+
+\input{Preamble/packages.tex}
+\input{Preamble/macros.tex}
+\input{Preamble/tikz.tex}
+
+
+
+\title{Gait Lab Project}
+\author{Andrew Jensen, John}
+
+
+
+\begin{document}
+\maketitle
+    \section{Introduction}
+    The human musculoskeletal system's primary function is to support our bodies' dynamic and loaded motion. In order to better understand the underlying pathologies of the musculoskeletal system, researchers have sought to understand the joints' motion. One such way to measure the kinematics of the joints is using motion capture, which takes advantage of an over-constrained system of externally-placed markers tracked by a series of high-speed cameras. This report outlines how to measure the knee's kinematics during various activities dynamically. These results will then be compared with proprietary gait lab software to determine how well our manual calculations line up.
+
+    \section{Methods}
+    \subsection{Experimental}
+    \subsection{Computational}
+    First, we want to define a reference frame for the femur. We do this during the static pose (or T-pose) trial. These matrices will be saved for later use.
+\begin{equation}
+    \begin{aligned}
+        \hat{O}_{fem} &= \frac{RMedKnee + RKnee}{2}\\
+        \hat{x}_{fem} & = \frac{RKnee - RMedKnee}{\|RKnee - RMedKnee\|} \\
+        \hat{z'}_{fem} &= \frac{HJC - O_{fem}}{\|HJC - O_{fem}\|} \\
+        \hat{y}_{fem} &= \frac{\hat{z'}_{fem} \times \hat{x}_{fem}}{\|\hat{z'}_{fem} \times \hat{x}_{fem}\|} \\
+        \hat{z}_{fem} & = \frac{\hat{x}_{fem} \times \hat{y}_{fem}}{\|\hat{x}_{fem} \times \hat{y}_{fem}\|}
+    \end{aligned}
+    \label{fem_rf}
+\end{equation}
+    
+    Now, with an origin an three orthonormal basis vectors, we can create a reference frame,
+    \begin{equation}
+        \begin{aligned}
+            T^{G}_{fem} &= \begin{bmatrix}
+                \hat{x}_{fem} &\hat{y}_{fem} &\hat{z}_{fem} & O_{fem} \\
+                0 & 0 & 0 & 1
+            \end{bmatrix} \\
+            &= \begin{bmatrix}
+                & R^{fem}_{3 \times 3} & & O^{fem}_{3 \times 1} \\
+                0 & 0 & 0 & 1
+            \end{bmatrix}
+        \end{aligned}
+        \label{t_gf}
+    \end{equation}
+
+    Unfortunately, due to the removal of the $RMedKnee$ marker during dynamic activity, we aren't able to measure this reference frame dynamically. In order to do that, we need to create a fiducial reference frame that CAN be measured dynamically, then define the transform between this fiducial frame and the femur. We define this reference frame using the $RThigh$, $HJC$, and $RKnee$.
+    Using a similar process as (\refeq{fem_rf}, \refeq{t_gf}), we obtain a similar transformation matrix $T^{G}_{thigh}$. 
+
+    Now, we can define a reference frame $T^{thigh}_{fem}$, which we can use to post-multiply $T^{G}_{fem}$. 
+    \begin{equation}
+        T^{thigh}_{fem} = [T^{G}_{thigh}]^{-1}T^{G}_{fem}
+    \end{equation}
+
+    Now, for any dynamically measurable $T^{G}_{thigh}$, we can obtain the location of the femur via (\refeq{t_th_g_f}).
+
+    \begin{equation}
+        T^{G}_{fem,dynammic} = T^{G}_{thigh,dynamic}T^{thigh}_{fem}
+        \label{t_th_g_f}
+    \end{equation}
+
+    \begin{mdframed}
+        \subsubsection*{A Brief Example}
+        Let's imagine we are trying to determine the location of the femur at $t=1.05s$, which occurs at the 655th frame. 
+        
+        First, we would use the process defined in (\refeq{fem_rf}, \refeq{t_gf}) to build a reference frame for the $RThigh$ at $t = 1.05s$. Then, with this reference frame defined for that particular time point, we can post-multiply by $T^{thigh}_{fem}$ in order to obtain $T^{G}_{fem}$.
+        \begin{equation}
+            T^{G}_{fem,dynamic} = T^{G}_{thigh,dynamic}T^{thigh}_{fem}
+        \end{equation}
+    \end{mdframed}
+
+    Now, the ultimate goal is measuring the relative motion between the tibia and femur. To do this, we need to create some reference frames for the tibia. Similar to the femur, our desired reference frame (tibia) is not measurable dynamically due to the lack of markers. Thus, we create a similar fiducial markerset for the shank in order to measure the dynamic motion of the tibia.
+
+    \begin{equation}
+        \begin{aligned}
+            \hat{O}_{tib} &= \frac{RMedKnee + RKnee}{2}\\
+            \hat{x}_{tib} & = \frac{RKnee - RMedKnee}{\|RKnee - RMedKnee\|} \\
+            \hat{z'}_{tib} &= \frac{RAnkle - O_{tib}}{\|RAnkle - O_{tib}\|} \\
+            \hat{y}_{tib} &= \frac{\hat{z'}_{tib} \times \hat{x}_{tib}}{\|\hat{z'}_{tib} \times \hat{x}_{tib}\|} \\
+            \hat{z}_{tib} & = \frac{\hat{x}_{tib} \times \hat{y}_{tib}}{\|\hat{x}_{tib} \times \hat{y}_{tib}\|}
+        \end{aligned}
+        \label{tib_rf}
+    \end{equation}
+
+    \begin{equation}
+        \begin{aligned}
+            T^{G}_{tib} &= \begin{bmatrix}
+                \hat{x}_{tib} &\hat{y}_{tib} &\hat{z}_{tib} & O_{tib} \\
+                0 & 0 & 0 & 1
+            \end{bmatrix} \\
+            &= \begin{bmatrix}
+                & R^{tib}_{3 \times 3} & & O^{tib}_{3 \times 1} \\
+                0 & 0 & 0 & 1
+            \end{bmatrix}
+        \end{aligned}
+        \label{t_gt}
+    \end{equation}
+    Much like above, this can only be measured statically, so we must create a fiducial marker set that can be measured dynamically, and relate the two with a transformation matrix. We do this using the three points $RShank$, $RAnkle$, and $RKnee$, using a similar process outlined above.
+
+    \subsubsection{Relative Tibiofemoral Motion}
+    At this point, we are able to dynamically determine the location of our femur and tibia in the global reference frame. Using the multiplicative and invertible properties of the transformation matrices, we can determine the relative transformation between the femur and tibia (\ref{t_fem_tib}).
+
+    \begin{equation}
+        \begin{aligned}
+            T^{fem}_{tib} &= [T^{G}_{fem}]^{-1}T^{G}_{tib} \\
+            &= [T^{G}_{thigh}T^{thigh}_{fem}]^{-1}[T^{G}_{shank}T^{shank}_{tib}]
+        \end{aligned}
+        \label{t_fem_tib}
+    \end{equation}
+\end{document}
