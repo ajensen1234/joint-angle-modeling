@@ -11,25 +11,14 @@ class Joint:
         self.joint_angles, self.translations = self.calculate_joint_geometry()
         
     def calculate_joint_geometry(self):
-        proximal_camera_to_true_matrices= []
-        distal_camera_to_true_matrices = []
-        joint_transformation_matrices = []
         joint_angles = []
         translations = []
         for idx, (i,j) in enumerate(zip(self.PBDRF_array, self.DBDRF_array)):
-            """
-            proximal_camera_to_true_matrices = np.append(proximal_camera_to_true_matrices, np.matmul(self.proximal_bone_dynamic_to_true_matrix, self.PBDRF_array[idx].camera_to_local_matrix))
-            distal_camera_to_true_matrices = np.append(distal_camera_to_true_matrices, np.matmul(self.distal_bone_dynamic_to_true_matrix, self.DBDRF_array[idx].camera_to_local_matrix))
-            # the below line should not go out of bounds because the proximal and distal bone matrix elements it needs have just been created
-            joint_transformation_matrices = np.append(joint_transformation_matrices, np.matmul(proximal_camera_to_true_matrices[idx], np.linalg.inv(distal_camera_to_true_matrices[idx])))
-
-            print(joint_transformation_matrices)
-            """
 
             proximal_camera_to_true_matrix = np.matmul(self.proximal_bone_dynamic_to_true_matrix, self.PBDRF_array[idx].camera_to_local_matrix)
             distal_camera_to_true_matrix = np.matmul(self.distal_bone_dynamic_to_true_matrix, self.DBDRF_array[idx].camera_to_local_matrix)
             joint_transformation_matrix = np.matmul(proximal_camera_to_true_matrix, np.linalg.inv(distal_camera_to_true_matrix))
-            print(joint_transformation_matrix)
+            #print(joint_transformation_matrix)
             
             # calculate joint angles
             # TODO: check this and account for angles that fall outside of the range of the arccos and arcsin functions

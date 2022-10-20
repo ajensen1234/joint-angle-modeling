@@ -24,10 +24,12 @@ RThigh_frame = pd.DataFrame(RThigh, columns=['X', 'Y', 'Z'])
 RThigh_frame = tuple(RThigh_frame.itertuples(index=False, name=None))
 crossyboy = np.cross(pls_work, RThigh_frame)
 #print(type(RThigh_frame))
-print(pls_work[123])
-print(type([1,2,3]))
 #print(RThigh_frame)
 #print(list(RThigh_frame))
+
+vector = [0, 0, 1]
+print(vector)
+print(np.linalg.norm(vector))
 
 #crossyboy = crossyboy / np.linalg.norm(crossyboy, axis=1)[:,:]
 for idx, point in enumerate(crossyboy):

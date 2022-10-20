@@ -17,9 +17,9 @@ class ReferenceFrame:
         self.z_axis = np.cross(self.x_axis, self.y_axis)
 
         # normalize the axes
-        self.x_axis = self.normalize_axis(self.x_axis)
-        self.y_axis = self.normalize_axis(self.y_axis)
-        self.z_axis = self.normalize_axis(self.z_axis)
+        self.x_axis = np.divide(self.x_axis, np.linalg.norm(self.x_axis))
+        self.y_axis = np.divide(self.y_axis, np.linalg.norm(self.y_axis))
+        self.z_axis = np.divide(self.z_axis, np.linalg.norm(self.z_axis))
 
         """
         # average axes to get the final axes
@@ -39,6 +39,14 @@ class ReferenceFrame:
 
     def create_transformation_matrix(self, x_axis, y_axis, z_axis, origin):
         temp = np.array([x_axis, y_axis, z_axis])
+
+        # assert that the rotation matrices are good
+
+        np.testing.assert_almost_equal(np.transpose(temp), np.linalg.inv(temp), decimal=3,
+                                err_msg='The rotation matrix is not orthogonal')
+        np.testing.assert_almost_equal(np.linalg.det(temp), 1 or -1, decimal=3,
+                                err_msg="Transformation matrix is not a rotation matrix!")
+
         temp = np.append(temp, [origin], axis=0)
         temp = np.append(temp, np.array([[0],[0],[0],[1]]), axis=1).T
         #print(temp)
