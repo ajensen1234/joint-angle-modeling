@@ -1,40 +1,49 @@
 import numpy as np
 from Bone import Bone
-from MarkerSet import MarkerSet
+from ReferenceFrame import ReferenceFrame
 
 class Joint:
-    def __init__(self, PBDMS: list, DBDMS: list, proximal_bone_dynamic_to_true_matrix, distal_bone_dynamic_to_true_matrix):
-        self.PBDMS = PBDMS
-        self.DBDMS = DBDMS
+    def __init__(self, PBDRF_array: np.array, DBDRF_array: np.array, proximal_bone_dynamic_to_true_matrix, distal_bone_dynamic_to_true_matrix):
+        self.PBDRF_array = PBDRF_array
+        self.DBDRF_array = DBDRF_array
         self.proximal_bone_dynamic_to_true_matrix = proximal_bone_dynamic_to_true_matrix
         self.distal_bone_dynamic_to_true_matrix = distal_bone_dynamic_to_true_matrix
         self.joint_angles, self.translations = self.calculate_joint_geometry()
         
-    def calculate_joint_geometry(self) -> list, list:
+    def calculate_joint_geometry(self):
         proximal_camera_to_true_matrices= []
         distal_camera_to_true_matrices = []
         joint_transformation_matrices = []
         joint_angles = []
         translations = []
-        for idx, frame in enumerate(Frames):
-            proximal_camera_to_true_matrices.append(np.matmul(self.proximal_bone_dynamic_to_true_matrix, self.PBDMS[idx].camera_to_local_matrix))
-            distal_camera_to_true_matrices.append(np.matmul(self.distal_bone_dynamic_to_true_matrix, self.DBDMS[idx].camera_to_local_matrix))
+        for idx, (i,j) in enumerate(zip(self.PBDRF_array, self.DBDRF_array)):
+            """
+            proximal_camera_to_true_matrices = np.append(proximal_camera_to_true_matrices, np.matmul(self.proximal_bone_dynamic_to_true_matrix, self.PBDRF_array[idx].camera_to_local_matrix))
+            distal_camera_to_true_matrices = np.append(distal_camera_to_true_matrices, np.matmul(self.distal_bone_dynamic_to_true_matrix, self.DBDRF_array[idx].camera_to_local_matrix))
             # the below line should not go out of bounds because the proximal and distal bone matrix elements it needs have just been created
-            joint_transformation_matrices.append(np.matmul(proximal_camera_to_true_matrices[idx], np.linalg.inv(distal_camera_to_true_matrices[idx])))
+            joint_transformation_matrices = np.append(joint_transformation_matrices, np.matmul(proximal_camera_to_true_matrices[idx], np.linalg.inv(distal_camera_to_true_matrices[idx])))
+
+            print(joint_transformation_matrices)
+            """
+
+            proximal_camera_to_true_matrix = np.matmul(self.proximal_bone_dynamic_to_true_matrix, self.PBDRF_array[idx].camera_to_local_matrix)
+            distal_camera_to_true_matrix = np.matmul(self.distal_bone_dynamic_to_true_matrix, self.DBDRF_array[idx].camera_to_local_matrix)
+            joint_transformation_matrix = np.matmul(proximal_camera_to_true_matrix, np.linalg.inv(distal_camera_to_true_matrix))
+            print(joint_transformation_matrix)
             
             # calculate joint angles
             # TODO: check this and account for angles that fall outside of the range of the arccos and arcsin functions
-            x_angle = (np.arcsin(joint_transformation_matrices[idx][2][1]))
-            y_angle = (np.arccos(joint_transformation_matrices[idx][2][2]/np.cos(x_angle)))
-            z_angle = (np.arccos(joint_transformation_matrices[idx][1][1]/np.cos(x_angle)))
-            joint_angles.append([x_angle, y_angle, z_angle])
+            x_angle = (np.arcsin(joint_transformation_matrix[2][1]))
+            y_angle = (np.arccos(joint_transformation_matrix[2][2]/np.cos(x_angle)))
+            z_angle = (np.arccos(joint_transformation_matrix[1][1]/np.cos(x_angle)))
+            joint_angles = np.append(joint_angles, [x_angle, y_angle, z_angle])
 
             # calculate joint translations
             # TODO: check this lol
-            x_translation = joint_transformation_matrices[idx][0][3]
-            y_translation = joint_transformation_matrices[idx][1][3]
-            z_translation = joint_transformation_matrices[idx][2][3]
-            translations.append([x_translation, y_translation, z_translation])
+            x_translation = joint_transformation_matrix[0][3]
+            y_translation = joint_transformation_matrix[1][3]
+            z_translation = joint_transformation_matrix[2][3]
+            translations = np.append(translations, [x_translation, y_translation, z_translation])
 
 
         return joint_angles, translations

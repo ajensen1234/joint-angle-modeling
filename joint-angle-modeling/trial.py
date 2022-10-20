@@ -8,66 +8,65 @@ import pandas as pd
 import numpy as np
 
 from functions import *
+from Joint import Joint
 
-TRIAL_PATH = '../friday/4407cd02.trc'
-PROXIMAL_MATRIX_PATH = ''
-DISTAL_MATRIX_PATH = ''
+TRIAL_PATH = 'friday/4407cd02.trc'
+PROXIMAL_MATRIX_PATH = 'proximal_bone_dynamic_to_true_matrix.npy'
+DISTAL_MATRIX_PATH = 'distal_bone_dynamic_to_true_matrix.npy'
 
+# load in the actual trial data that we want to get info for
+trial_data = TRCData()
+trial_data.load(TRIAL_PATH)   # cd02 is walking
 
 # General
-Frames_raw = calib_data['Frames']
+Frames_raw = trial_data['Frame#']
 Frames = pd.DataFrame(Frames_raw)
 
-Time_raw = calib_data['Time']
+Time_raw = trial_data['Time']
 Time = pd.DataFrame(Time_raw)
 
 ## Right Thigh
-RASIS_raw = calib_data['RASIS']
+RASIS_raw = trial_data['RASIS']
 RASIS = pd.DataFrame(RASIS_raw, columns=['X', 'Y', 'Z'])
-RASIS = tuple(RASIS.itertuples(index=False, name=None))
+RASIS = RASIS.to_numpy()
 
-RPSIS_raw = calib_data['RPSIS']
+RPSIS_raw = trial_data['RPSIS']
 RPSIS = pd.DataFrame(RPSIS_raw, columns=['X', 'Y', 'Z'])
-RPSIS = tuple(RPSIS.itertuples(index=False, name=None))
+RPSIS = RPSIS.to_numpy()
 
-LASIS_raw = calib_data['LASIS']
+LASIS_raw = trial_data['LASIS']
 LASIS = pd.DataFrame(LASIS_raw, columns=['X', 'Y', 'Z'])
-LASIS = tuple(LASIS.itertuples(index=False, name=None))
+LASIS = LASIS.to_numpy()
 
-RThigh_raw = calib_data['RThigh']
+LPSIS_raw = trial_data['LPSIS']
+LPSIS = pd.DataFrame(LPSIS_raw, columns=['X', 'Y', 'Z'])
+LPSIS = LPSIS.to_numpy()
+
+HipCenter = find_right_hip_center_andriacchi(RASIS=RASIS, RPSIS=RPSIS, LASIS=LASIS, LPSIS=LPSIS)
+
+RThigh_raw = trial_data['RThigh']
 RThigh = pd.DataFrame(RThigh_raw, columns=['X', 'Y', 'Z'])
-RThigh = tuple(RThigh.itertuples(index=False, name=None))
+RThigh = RThigh.to_numpy()
 
-RKnee_raw = calib_data['RKnee']
+RKnee_raw = trial_data['RKnee']
 RKnee = pd.DataFrame(RKnee_raw, columns=['X', 'Y', 'Z'])
-RKnee = tuple(RKnee.itertuples(index=False, name=None))
+RKnee = RKnee.to_numpy()
 
-RMedKnee_raw = calib_data['RMed.Knee']
-RMedKnee = pd.DataFrame(RMedKnee_raw, columns=['X', 'Y', 'Z'])
-RMedKnee = tuple(RMedKnee.itertuples(index=False, name=None))
-
-# Right Shank
-#RKnee
-#RMedKnee
-RShank_raw = calib_data['RShank']
+RShank_raw = trial_data['RShank']
 RShank = pd.DataFrame(RShank_raw, columns=['X', 'Y', 'Z'])
-RShank = tuple(RShank.itertuples(index=False, name=None))
+RShank = RShank.to_numpy()
 
-RAnkle_raw = calib_data['RAnkle']
+RAnkle_raw = trial_data['RAnkle']
 RAnkle = pd.DataFrame(RAnkle_raw, columns=['X', 'Y', 'Z'])
-RAnkle = tuple(RAnkle.itertuples(index=False, name=None))
+RAnkle = RAnkle.to_numpy()
 
-RMedAnkle_raw = calib_data['RMed.Ankle']
-RMedAnkle = pd.DataFrame(RMedAnkle_raw, columns=['X', 'Y', 'Z'])
-RMedAnkle = tuple(RMedAnkle.itertuples(index=False, name=None))
-
-RHeel_raw = calib_data['RHeel']
+RHeel_raw = trial_data['RHeel']
 RHeel = pd.DataFrame(RHeel_raw, columns=['X', 'Y', 'Z'])
-RHeel = tuple(RHeel.itertuples(index=False, name=None))
+RHeel = RHeel.to_numpy()
 
-RToe_raw = calib_data['RToe']
+RToe_raw = trial_data['RToe']
 RToe = pd.DataFrame(RToe_raw, columns=['X', 'Y', 'Z'])
-RToe = tuple(RToe.itertuples(index=False, name=None))
+RToe = RToe.to_numpy()
 
 
 
@@ -75,44 +74,35 @@ RToe = tuple(RToe.itertuples(index=False, name=None))
 
 ### Trial Phase
 
-# Load trial data
-trial_data = TRCData()
-trial_data.load(TRIAL_PATH)
 
 # Load calibration matrices
+proximal_bone_dynamic_to_true_matrix = np.load(PROXIMAL_MATRIX_PATH, allow_pickle=True)
+distal_bone_dynamic_to_true_matrix = np.load(DISTAL_MATRIX_PATH, allow_pickle=True)
 
-# create proximal dynamic maker set
-
-# create distal dynamic marker set
+# create proximal and dynamic reference frames
+DynamicThighXAxis = RKnee - RThigh
+DynamicShankXAxis = RAnkle - RShank
+PBDRF_array = []
+DBDRF_array = []
+for idx in range(0, len(Frames)):
+    PBDRF_array = np.append(PBDRF_array, ReferenceFrame(RThigh[idx], DynamicThighXAxis[idx], HipCenter[idx]))
+    DBDRF_array = np.append(DBDRF_array, ReferenceFrame(RShank[idx], DynamicShankXAxis[idx], RKnee[idx]))
 
 ## Do Knee Joint Things
 # create knee joint object
-HipCenter = find_right_hip_center_andriacchi(RASIS=RASIS, RPSIS=RPSIS, LASIS=LASIS, LPSIS=LPSIS)
-DynamicThighXAxis = ()
-for idx, (i, j) in enumerate(zip(RKnee, RThigh)):
-    DynamicThighXAxis += (i[0]-j[0], i[1]-j[1], i[2]-j[2]),
-DynamicShankXAxis = ()
-for idx, (i, j) in enumerate(zip(RAnkle, RShank)):
-    DynamicShankXAxis += (i[0]-j[0], i[1]-j[1], i[2]-j[2]),
-PBDMS = []
-DBDMS = []
-for idx, frame in enumerate(Frames):
-    PBDMS.append(MarkerSet(RThigh[idx], DynamicThighXAxis[idx], HipCenter[idx]))
-    DBDMS.append(MarkerSet(RShank[idx], DynamicShankXAxis[idx], RKnee[idx]))
-
-# PBDMS = proximal dynamic marker set, DBDMS = distal dynamic marker set
-Knee = Joint(PBDMS=PBDMS, DBDMS=DBDMS, proximal_bone_dynamic_to_true_matrix=, distal_bone_dynamic_to_true_matrix=)
-#print(Knee.joint_angles)
+# PBDRF = proximal dynamic reference frame, DBDRF = distal dynamic reference frame
+Knee = Joint(PBDRF_array=PBDRF_array,
+            DBDRF_array=DBDRF_array,
+            proximal_bone_dynamic_to_true_matrix=proximal_bone_dynamic_to_true_matrix,
+            distal_bone_dynamic_to_true_matrix=distal_bone_dynamic_to_true_matrix)
 
 
-# load the dynamic and true markersets into the thigh object
-Thigh.load_markers(DynamicThigh, TrueThigh) # the markersets get loaded into the bone object and transformation matrices are created
 
-# load in the actual trial data that we want to get info for
-trial_data = TRCData()
-trial_data.load('../friday/4407cd02.trc')   # cd02 is walking
-# return movement in the true reference frame
-final_data = np.matmul(Thigh.camera_to_local_matrix, trial_data)    # this trial_data needs to be broken down to the markers
+print(Knee.joint_angles)
+print(Knee.translations)
+
+
+
 
 
 

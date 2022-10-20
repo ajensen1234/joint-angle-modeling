@@ -1,11 +1,11 @@
 import numpy as np
 import pandas as pd
 
-class MarkerSet:
+class ReferenceFrame:
     def __init__():
-        print("Please make sure to initialize your markerset using 'load_from_dataframe' or 'load_from_numpy'")
+        print("Please make sure to initialize your ReferenceFrame using 'load_from_dataframe' or 'load_from_numpy'")
 
-    def __init__(self, origin: tuple, x_axis: tuple, z_prime_end: tuple):
+    def __init__(self, origin: np.ndarray, x_axis: np.ndarray, z_prime_end: np.ndarray):
         # these are arrays, not individual points
 
         # create the axes
@@ -39,7 +39,9 @@ class MarkerSet:
 
     def create_transformation_matrix(self, x_axis, y_axis, z_axis, origin):
         temp = np.array([x_axis, y_axis, z_axis])
+        temp = np.append(temp, [origin], axis=0)
         temp = np.append(temp, np.array([[0],[0],[0],[1]]), axis=1).T
+        #print(temp)
         return temp
     
     def normalize_axis(self, axis) -> np.ndarray:
