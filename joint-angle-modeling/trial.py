@@ -11,6 +11,9 @@ from functions import *
 from Joint import Joint
 
 TRIAL_PATH = 'friday/4407cd02.trc'
+# For cd04, there are many missing values, so we will need to interpolate or ignore those frames.
+# For cd05, RAnkle frame 93 has an empty X component.
+# This is causing a NaN in the matrices it feeds into.
 PROXIMAL_MATRIX_PATH = 'proximal_bone_dynamic_to_true_matrix.npy'
 DISTAL_MATRIX_PATH = 'distal_bone_dynamic_to_true_matrix.npy'
 
@@ -84,9 +87,21 @@ DynamicThighXAxis = RKnee - RThigh
 DynamicShankXAxis = RAnkle - RShank
 PBDRF_array = []
 DBDRF_array = []
+# TODO: make the added reference frames robust to missing data
+# by including a check for NaNs in the data and leaving those frames out.
+# I think this is done. Please also check the section in Joint.py at lines 29 and 36 - Sasank
 for idx in range(0, len(Frames)):
-    PBDRF_array = np.append(PBDRF_array, ReferenceFrame(RThigh[idx], DynamicThighXAxis[idx], HipCenter[idx]))
-    DBDRF_array = np.append(DBDRF_array, ReferenceFrame(RShank[idx], DynamicShankXAxis[idx], RKnee[idx]))
+    if np.isnan(RThigh[idx]).any() or np.isnan(DynamicThighXAxis[idx]).any() or np.isnan(HipCenter[idx]).any():
+        print('Frame ' + str(idx) + ' has NaNs in the thigh reference frame')
+        continue
+    if np.isnan(RShank[idx]).any() or np.isnan(DynamicShankXAxis[idx]).any() or np.isnan(RKnee[idx]).any():
+        print('Frame ' + str(idx) + ' has NaNs in the shank reference frame')
+        continue
+    #if not np.isnan(RThigh[idx], DynamicThighXAxis[idx], HipCenter[idx], RShank[idx], DynamicShankXAxis[idx], RKnee[idx]).any():
+    if not (np.isnan(RThigh[idx]).any() or np.isnan(RShank[idx]).any() or np.isnan(DynamicThighXAxis[idx]).any() or np.isnan(DynamicShankXAxis[idx]).any() or np.isnan(HipCenter[idx]).any() or np.isnan(RKnee[idx]).any()):
+        PBDRF_array = np.append(PBDRF_array, ReferenceFrame(RThigh[idx], DynamicThighXAxis[idx], HipCenter[idx], frame_index=idx))
+        DBDRF_array = np.append(DBDRF_array, ReferenceFrame(RShank[idx], DynamicShankXAxis[idx], RKnee[idx], frame_index=idx))
+    #print('Finished creating reference frames for frame ' + str(idx))
 
 ## Do Knee Joint Things
 # create knee joint object

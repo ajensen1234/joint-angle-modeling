@@ -5,7 +5,10 @@ class ReferenceFrame:
     def __init__():
         print("Please make sure to initialize your ReferenceFrame using 'load_from_dataframe' or 'load_from_numpy'")
 
-    def __init__(self, origin: np.ndarray, x_axis: np.ndarray, z_prime_end: np.ndarray):
+    def __init__(self, origin: np.ndarray, x_axis: np.ndarray, z_prime_end: np.ndarray, frame_index=None):
+        if frame_index is not None:
+            self.frame_index = frame_index
+
         # these are arrays, not individual points
 
         # create the axes
@@ -45,7 +48,7 @@ class ReferenceFrame:
         np.testing.assert_almost_equal(np.transpose(temp), np.linalg.inv(temp), decimal=3,
                                 err_msg='The rotation matrix is not orthogonal')
         np.testing.assert_almost_equal(np.linalg.det(temp), 1 or -1, decimal=3,
-                                err_msg="Transformation matrix is not a rotation matrix!")
+                                err_msg="Rotation matrix determinant is not zero!")
 
         temp = np.append(temp, [origin], axis=0)
         temp = np.append(temp, np.array([[0],[0],[0],[1]]), axis=1).T
