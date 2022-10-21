@@ -10,7 +10,8 @@ import numpy as np
 from functions import *
 from Joint import Joint
 
-TRIAL_PATH = 'friday/4407cd02.trc'
+TRIAL = 'cd05'
+TRIAL_PATH = 'friday/4407' + TRIAL + '.trc'
 # For cd04, there are many missing values, so we will need to interpolate or ignore those frames.
 # For cd05, RAnkle frame 93 has an empty X component.
 # This is causing a NaN in the matrices it feeds into.
@@ -116,8 +117,8 @@ Knee = Joint(PBDRF_array=PBDRF_array,
 print(Knee.joint_angles.shape)
 print(Knee.translations.shape)
 
-np.save('knee_joint_angles.npy', Knee.joint_angles)
-np.save('knee_translations.npy',Knee.translations)
+np.save(TRIAL + '_knee_joint_angles.npy', Knee.joint_angles)
+np.save(TRIAL + '_knee_translations.npy',Knee.translations)
 
 
 
