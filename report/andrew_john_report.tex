@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[10pt]{IEEEtran}
 \usepackage{import}
 
 \input{Preamble/packages.tex}
@@ -8,7 +8,11 @@
 
 
 \title{Gait Lab Project}
-\author{Andrew Jensen, John}
+\author{
+    \IEEEauthorblockN{John Hanlon} \IEEEauthorblockA{UF College of Veterinary Medicine} \\
+    \and \IEEEauthorblockN{Andrew Jensen} \IEEEauthorblockA{UF College of Engineering}
+}
+
 
 
 
@@ -19,6 +23,8 @@
 
     \section{Methods}
     \subsection{Experimental}
+    A young, healthy, male test subject was selected for use in this joint kinematic assessment. Marker placement related to the assessment of right knee kinematics were present on the right medial and lateral femoral epicondyles, the anterior aspect of the right thigh mid-way between the right knee and right hip joints and the anterior aspect of the proximal right tibia (maximal point of tubial tuberosity). The marker placed on the right medial femoral epicondyle was removed following assessment of the markers in a static pose prior to initiation of dynamic evaluation. Additional markers were placed but data collected from their positioning was not used for this project but could be used for calculation of additional reference frames for evaluation of kinematics of other joints. \\
+    Motion capture was performed with the subject on a treadmill set to a walking and running speed of 2.8 mph and 5.0 mph respectively. An incline was then placed on the treadmill to simulate uphill running at a speed of 5.2 mph and additional  motion capture data was collected. 
     \subsection{Computational}
     First, we want to define a reference frame for the femur. We do this during the static pose (or T-pose) trial. These matrices will be saved for later use.
 \begin{equation}
@@ -131,9 +137,38 @@
 
     \begin{equation}
         \begin{aligned}
-            \theta_{y} &= sin^{-1}(R_{1,3}) = \text{Flexion/Extension} \\
+            \theta_{x} & = tan^{-1}(-\frac{R_{2,3}}{R_{3,3}}) = \text{Flexion/Extension}\\
+            \theta_{y} &= sin^{-1}(R_{1,3}) = \text{Abduction/Adduction} \\
             \theta_{z} & = tan^{-1}(-\frac{R_{1,2}}{R_{1,1}}) = \text{Internal/External Rotation} \\
-            \theta_{x} & = tan^{-1}(-\frac{R_{2,3}}{R_{3,3}}) = \text{Abduction/Adduction}
         \end{aligned}
     \end{equation}
+
+    \section{Data Assessment}
+    \subsection{Repeatability of Knee Angles Within the Same Test Conditions}
+    \subsubsection{Walking}
+    The previously described protocol for joint angle calculation produced consistent and repeatable joint angles in flexion, adduction/abduction and internal/external rotation during both the swing and stance phase of the gait cycle when compared between strides. Though small variation between cycles is present, this variance is likely due to true variance in joint angle caused by minor variation in the gait between steps taken (stride length, relative step placement, etc.). 
+    \subsubsection{Running}
+    The previously described protocol generated consistent joint angles when compared between strides in flexion, abduction/adduction and internal/external rotation. Again, though minor variation was present between gait cycles, this variation is likely due to changes in the characteristics of the gait as no two strides will be exactly identical in all aspects. 
+
+    \subsection{Comparison of Joint Angles}
+    \subsubsection{Comparison of Walking and Running Knee Joint Angles}
+    Knee joint angles measured during running are consistently greater in all axis in comparison to those measured during a walk. Maximal knee flexion, though present during the swing phase in both conditions, was 32\% greater during running, increasing from 74.4 degrees to 98.2 degrees from walking to running respectively and correspond to a larger stride length and necessity to generate increased force during the running condition. A proportionally greater increase in stance phase maximal knee flexion angle was appreciated during running, attributable to the greater vertical force experienced by the knee during the stance phase of the gait cycle during running compared to walking. A large increase in knee abduction/adduction joint angle was appreciated when running that, though possibly representative of true tibial varus/valgus, may also be a misrepresentation of the true angle caused by combinations of other concurrent knee movements such as knee flexion and internal/external rotation as well as concurrent internal/external rotation of the hip, resulting in a false reading of the joint angle in the frontal plane. 
+    \subsubsection{Comparison of Running on Flat Ground vs Running on an Incline}
+    Large variation was only observed in knee flexion angles when compared between test conditions with flat ground running creating a maximal knee flexion angle of 98.2 degrees while 120.7 degrees of maximal flexion was appreciated during running on an incline. This supports what is expected considering the conditions as increased hip and knee flexion during the swing phase of the gait cycle is required during inclined conditions to account for the elevation increase if the same stride length is to be maintained. 
+
+    \subsection{Comparison of Knee Flexion Angles with Lab Standard Software}
+    \emph{Disclaimers:}
+    \begin{enumerate}
+        \item The provided data from the lab standard software is in the form of graphs which does not provide exact values for knee flexion at different points in e gait cycle. Instead, only approximations of joint angles at different points in the gait cycle can be made. 
+        \item Provided data from the lab standard software only includes knee flexion angles, not permitting comparison of other knee angles such as abduction/adduction or internal/external rotation. 
+        \item The lab standard software data for knee flexion angles is reported as an average between all gait cycles included in the study period. This comes in comparison to the calculated maximal flexion values for a subset of gait cycles analyzed. True comparison would require mean maximal knee flexion angle for the calculated data or comparison of maximal flexion angles measured for the exact same gait cycle, which is not available from the lab standard software as provided. 
+    \end{enumerate}
+
+    \subsubsection{Walking}
+    During the walk, the maximal flexion angle calculated was 74.4 degrees, observed during mid to late swing phase of the gait cycle. Though the maximal flexion angle was measured during the same point in the gait cycle by the lab standard software, the maximal flexion angle measured by the software was approximately 20 degrees less at around 55 degrees. (see disclaimers A and C for potential contributions to this discrepancy).
+    \subsubsection{Running}
+    Similar to the comparison between software for walking, knee joint flexion angle and adduction/abduction measures were calculated as greater using the described methods compared to the standard lab software. The maximal flexion angle calculated was 98.2 degrees while the maximal flexion calculated by the lab standard software was roughly 90 degrees. This discrepancy is very similar to the differences in calculated values for the walking condition. (see disclaimers A and C for potential contributions to this discrepancy).
+    \subsubsection{Inclined Running}
+    An increased difference was appreciated when comparing knee flexion angle between lab standard values and calculated values during inclined running conditions. Calculated maximal flexion angle was 120.7 degrees compared to an average of approximately 90 degrees from the lab standard software. (see disclaimers A and C for potential contributions to this discrepancy).
+
 \end{document}
